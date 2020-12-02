@@ -3,6 +3,9 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
+    "containerEnv": {
+        "DISPLAY": ":0"
+    },
     "settings": {
         "terminal.integrated.shell.linux": "/bin/bash"
     },
@@ -11,5 +14,7 @@
         "mhutchie.git-graph",
         "streetsidesoftware.code-spell-checker"
     ],
-    "postCreateCommand": "raco pkg install --deps search-auto racket-langserver"
+    "remoteUser": "vscode",
+    "postCreateCommand": "raco pkg install --deps search-auto racket-langserver",
+    "postStartCommand": "Xvfb :0 &"
 }

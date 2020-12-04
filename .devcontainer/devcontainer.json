@@ -10,10 +10,11 @@
         "terminal.integrated.shell.linux": "/bin/bash"
     },
     "extensions": [
-        "evzen-wybitul.magic-racket",
-        "mhutchie.git-graph",
-        "streetsidesoftware.code-spell-checker"
-    ],
+		"evzen-wybitul.magic-racket",
+		"mhutchie.git-graph",
+		"streetsidesoftware.code-spell-checker",
+		"2gua.rainbow-brackets"
+	],
     "remoteUser": "vscode",
     "postCreateCommand": "raco pkg install --deps search-auto racket-langserver",
     "postStartCommand": "Xvfb :0 &"

@@ -35,8 +35,7 @@
         (find-triple-using-map indexed-list diff-map)))
 
 (define input-parser
-  (trim-spaces-eof (<any> (try (endBy integer $eol)) 
-                          (sepBy integer $eol))))
+  (trim-spaces-eof (end-or-sep-by integer $eol)))
 
 (define (solution-part1 input)
   (match-let ([(list x y) (find-pair (parse-result input-parser input) 2020)])

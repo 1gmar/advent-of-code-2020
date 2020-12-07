@@ -1,5 +1,4 @@
 #lang racket
-
 (require 
   (only-in rackunit check-equal?)
   (only-in racket/port port->string)

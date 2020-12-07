@@ -43,4 +43,4 @@
 
 (define (solution-part2 input)
   (let ([triple (find-triple (parse-result input-parser input) 2020)])
-       (foldl * 1 (map elem-value triple))))
+       (apply * (map elem-value triple))))

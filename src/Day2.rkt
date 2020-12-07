@@ -24,13 +24,12 @@
            (second (password-range pass)))))
 
 (define (letter-on-oneof-pos? pass)
-  (let* ([pos1 (first (password-range pass))]
-         [pos2 (second (password-range pass))]
-         [pass-value (password-value pass)]
+  (let* ([pass-value (password-value pass)]
          [pass-size (length pass-value)]
-         [letter (password-letter pass)])
-        (xor (and (<= pos1 pass-size) (equal? (list-ref pass-value (sub1 pos1)) letter))
-             (and (<= pos2 pass-size) (equal? (list-ref pass-value (sub1 pos2)) letter)))))
+         [letter-on-pos? (λ (pos) (and (<= pos pass-size)
+                                       (equal? (list-ref pass-value (sub1 pos)) (password-letter pass))))])
+        (xor (letter-on-pos? (first (password-range pass)))
+             (letter-on-pos? (second (password-range pass))))))
 
 (define (solution-part1 input)
   (length (filter letter-within-range? (parse-result input-parser input))))

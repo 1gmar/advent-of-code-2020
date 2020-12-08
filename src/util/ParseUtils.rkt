@@ -1,7 +1,7 @@
 #lang racket
 (provide (all-defined-out) (all-from-out parsack))
-(require (only-in parsack $anyChar $digit $eof $eol $letter $spaces between char endBy many1 many1Until parse-result
-                          parser-compose parser-cons return sepBy string try >> >>= <any>))
+(require (only-in parsack $digit $eof $eol $letter $spaces between char choice endBy many1 parse-result parser-compose
+                          parser-cons return sepBy string try >> >>= <any>))
 
 (define chars->number
   (compose string->number list->string))

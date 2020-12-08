@@ -14,20 +14,20 @@
                                      (char #\:)
                                      $spaces
                                      (letters <- (many1 $letter))
-                                     (return (password (list pmin pmax) letter letters)))])
+                                     (return (password (list pmin pmax) letter (apply vector-immutable letters))))])
        (trim-spaces-eof (end-or-sep-by line-parser $eol))))
 
 (define (letter-within-range? pass)
   (let ([letter-equal? (λ (letter) (equal? letter (password-letter pass)))])
        (<= (first (password-range pass))
-           (count letter-equal? (password-value pass))
+           (vector-count letter-equal? (password-value pass))
            (second (password-range pass)))))
 
 (define (letter-on-oneof-pos? pass)
   (let* ([pass-value (password-value pass)]
-         [pass-size (length pass-value)]
+         [pass-size (vector-length pass-value)]
          [letter-on-pos? (λ (pos) (and (<= pos pass-size)
-                                       (equal? (list-ref pass-value (sub1 pos)) (password-letter pass))))])
+                                       (equal? (vector-ref pass-value (sub1 pos)) (password-letter pass))))])
         (xor (letter-on-pos? (first (password-range pass)))
              (letter-on-pos? (second (password-range pass))))))
 

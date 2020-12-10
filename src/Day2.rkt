@@ -32,7 +32,7 @@
              (letter-on-pos? (second (password-range pass))))))
 
 (define (solution-part1 input)
-  (length (filter letter-within-range? (parse-result input-parser input))))
+  (count letter-within-range? (parse-result input-parser input)))
 
 (define (solution-part2 input)
-  (length (filter letter-on-oneof-pos? (parse-result input-parser input))))
+  (count letter-on-oneof-pos? (parse-result input-parser input)))

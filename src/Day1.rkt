@@ -21,9 +21,9 @@
   (match lst
     ['() '(0 0 0)]
     [(cons x xs)
-     (let ([index-not-equal (λ (e) (not (equal? (elem-index x) (elem-index e))))])
+     (let ([index-not-equal? (λ (e) (not (equal? (elem-index x) (elem-index e))))])
           (if (and (hash-has-key? diff-map (elem-value x))
-                   (andmap index-not-equal (hash-ref diff-map (elem-value x))))
+                   (andmap index-not-equal? (hash-ref diff-map (elem-value x))))
               (cons x (hash-ref diff-map (elem-value x)))
               (find-triple-using-map xs diff-map)))
     ]))

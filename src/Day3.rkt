@@ -1,7 +1,7 @@
 #lang racket
 (require "util/ParseUtils.rkt")
-(provide (contract-out [solution-part1 (-> string? number?)]
-                       [solution-part2 (-> string? number?)]))
+(provide (contract-out [solution-part1 (-> string? integer?)]
+                       [solution-part2 (-> string? integer?)]))
 
 (define input-parser
   (let* ([return-vector (λ (lst) (return (apply vector-immutable lst)))]
@@ -15,7 +15,7 @@
          [width (vector-length (vector-ref map-matrix 0))]
          [step-in (λ (i step) (+ (* i step) step))]
          [tree? (λ (pos) (let ([row (first pos)] [column (modulo (second pos) width)])
-                                 (equal? #\# (vector-ref (vector-ref map-matrix row) column))))])
+                              (equal? #\# (vector-ref (vector-ref map-matrix row) column))))])
         (count tree? (takef (for/list ([i (in-range height)])
                                       (list (step-in i row-step) (step-in i column-step)))
                             (λ (pos) (< (first pos) height))))))

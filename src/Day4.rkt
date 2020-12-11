@@ -1,7 +1,7 @@
 #lang racket
 (require "util/ParseUtils.rkt")
-(provide (contract-out [solution-part1 (-> string? number?)]
-                       [solution-part2 (-> string? number?)]))
+(provide (contract-out [solution-part1 (-> string? integer?)]
+                       [solution-part2 (-> string? integer?)]))
 
 (define (int-range-parser len low high)
   (>>= (parser-count len $digit)

@@ -1,10 +1,10 @@
 #lang racket
 (require
-  (only-in rackunit check-equal?)
+  (only-in rackunit check-equal? test-case define/provide-test-suite)
   (only-in racket/port port->string)
   "../src/Day4.rkt")
 
-(define test-case
+(define test-input
 "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
 
@@ -20,7 +20,8 @@ hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in")
 (define real-input (port->string (open-input-file "resources/input/day4.txt") #:close? #t))
 
-(check-equal? (solution-part1 test-case) 2)
-(check-equal? (solution-part1 real-input) 235)
-(check-equal? (solution-part2 test-case) 2)
-(check-equal? (solution-part2 real-input) 194)
+(define/provide-test-suite day-4-suite
+  (test-case "Part 1" (check-equal? (solution-part1 test-input) 2)
+                      (check-equal? (solution-part1 real-input) 235))
+  (test-case "Part 2" (check-equal? (solution-part2 test-input) 2)
+                      (check-equal? (solution-part2 real-input) 194)))

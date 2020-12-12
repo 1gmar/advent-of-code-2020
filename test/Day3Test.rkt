@@ -1,8 +1,6 @@
 #lang racket
-(require
-  (only-in rackunit check-equal? test-case define/provide-test-suite)
-  (only-in racket/port port->string)
-  "../src/Day3.rkt")
+(require (only-in rackunit check-equal? test-case define/provide-test-suite)
+         "../src/Day3.rkt")
 
 (define test-input
 "..##.......

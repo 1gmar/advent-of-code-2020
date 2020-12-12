@@ -24,4 +24,4 @@
 (define (solution-part2 input)
   (match-let* ([seat-ids (map (curry apply eval-seat-id) (parse-result input-parser input))]
                [(cons min-id max-id) (find-min-max seat-ids)])
-              (first (remove* seat-ids (range min-id max-id)))))
+              (set-first (set-subtract (for/set ([x (in-range min-id max-id)]) x) (list->set seat-ids)))))

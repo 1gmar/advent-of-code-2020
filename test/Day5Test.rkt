@@ -1,8 +1,6 @@
 #lang racket
-(require
-  (only-in rackunit check-equal? test-case define/provide-test-suite)
-  (only-in racket/port port->string)
-  "../src/Day5.rkt")
+(require (only-in rackunit check-equal? test-case define/provide-test-suite)
+         "../src/Day5.rkt")
 
 (define real-input (port->string (open-input-file "resources/input/day5.txt") #:close? #t))
 

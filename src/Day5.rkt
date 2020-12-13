@@ -4,8 +4,8 @@
                        [solution-part2 (-> string? integer?)]))
 
 (define input-parser
-  (let* ([format-binary (λ (chars) (append '(#\# #\b) chars))]
-         [char-return (λ (chr bit) (>>= (char chr) (λ (_) (return bit))))]
+  (let* ([format-binary (curry append '(#\# #\b))]
+         [char-return (λ (chr bit) (>> (char chr) (return bit)))]
          [row-parser (parser-count 7 (<any> (char-return #\F #\0) (char-return #\B #\1)))]
          [col-parser (parser-count 3 (<any> (char-return #\L #\0) (char-return #\R #\1)))]
          [boarding-pass-parser (parser-compose (row <- row-parser) (col <- col-parser)

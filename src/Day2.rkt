@@ -18,7 +18,7 @@
        (trim-spaces-eof (end-or-sep-by line-parser $eol))))
 
 (define (letter-within-range? pass)
-  (let ([letter-equal? (λ (letter) (equal? letter (password-letter pass)))])
+  (let ([letter-equal? (curry equal? (password-letter pass))])
        (<= (first (password-range pass))
            (vector-count letter-equal? (password-value pass))
            (second (password-range pass)))))

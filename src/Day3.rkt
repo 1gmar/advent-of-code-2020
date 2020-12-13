@@ -25,5 +25,5 @@
 
 (define (solution-part2 input)
   (let ([map-matrix (parse-result input-parser input)])
-       (apply * (map (λ (slope) (count-trees-for-slope map-matrix slope))
+       (apply * (map (curry count-trees-for-slope map-matrix)
                      (list '(1 1) '(1 3) '(1 5) '(1 7) '(2 1))))))

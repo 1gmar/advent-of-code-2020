@@ -23,12 +23,12 @@
 (define mandatory-fields (hash-keys field-parser-map))
 
 (define input-parser
-  (let* ([return-string (λ (chars) (return (list->string chars)))]
+  (let* ([return-string (compose return list->string)]
          [passport-field-keys (>>= (apply oneOfStrings (cons "cid" mandatory-fields)) return-string)]
          [passport-field-values (>>= (many1 (<any> $alphaNum (char #\#))) return-string)]
          [passport-field (parser-seq passport-field-keys (~ (char #\:)) passport-field-values #:combine-with cons)]
          [passport-parser (>>= (end-or-sep-by passport-field (<any> $eol $spaces))
-                               (λ (kv-pairs) (return (make-immutable-hash kv-pairs))))])
+                               (compose return make-immutable-hash))])
         (trim-spaces-eof (end-or-sep-by passport-parser $eol))))
 
 (define (field-value-valid? passport field-key)
@@ -36,7 +36,7 @@
        (not (empty? (parse-result (hash-ref field-parser-map field-key) (hash-ref passport field-key))))))
 
 (define (passport-valid? criteria passport)
-  (andmap (λ (field-key) (criteria passport field-key)) mandatory-fields))
+  (andmap (curry criteria passport) mandatory-fields))
 
 (define (solution-part1 input)
   (count (curry passport-valid? hash-has-key?) (parse-result input-parser input)))

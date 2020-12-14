@@ -14,22 +14,19 @@
                                      (char #\:)
                                      $spaces
                                      (letters <- (many1 $letter))
-                                     (return (password (list pmin pmax) letter (apply vector-immutable letters))))])
+                                     (return (password (cons pmin pmax) letter (apply vector-immutable letters))))])
        (trim-spaces-eof (end-or-sep-by line-parser $eol))))
 
-(define (letter-within-range? pass)
-  (let ([letter-equal? (curry equal? (password-letter pass))])
-       (<= (first (password-range pass))
-           (vector-count letter-equal? (password-value pass))
-           (second (password-range pass)))))
+(define/match (letter-within-range? pass)
+  [((password (cons pmin pmax) letter value))
+   (<= pmin (vector-count (curry equal? letter) value) pmax)])
 
-(define (letter-on-oneof-pos? pass)
-  (let* ([pass-value (password-value pass)]
-         [pass-size (vector-length pass-value)]
-         [letter-on-pos? (λ (pos) (and (<= pos pass-size)
-                                       (equal? (vector-ref pass-value (sub1 pos)) (password-letter pass))))])
-        (xor (letter-on-pos? (first (password-range pass)))
-             (letter-on-pos? (second (password-range pass))))))
+(define/match (letter-on-oneof-pos? pass)
+  [((password (cons pos1 pos2) letter value))
+   (let* ([pass-size (vector-length value)]
+          [letter-on-pos? (match-lambda [(? (curry >= pass-size) pos) (equal? (vector-ref value (sub1 pos)) letter)]
+                                        [else #f])])
+         (xor (letter-on-pos? pos1) (letter-on-pos? pos2)))])
 
 (define (solution-part1 input)
   (count letter-within-range? (parse-result input-parser input)))

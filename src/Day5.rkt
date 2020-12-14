@@ -16,7 +16,7 @@
   (+ (* row 8) col))
 
 (define (find-min-max lst)
-  (foldl (λ (x min-max) (cons (min (car min-max) x) (max (cdr min-max) x))) '(1024 . 0) lst))
+  (foldl (match-lambda** [(x (cons x-min x-max)) (cons (min x-min x) (max x-max x))]) '(1024 . 0) lst))
 
 (define (solution-part1 input)
   (apply max (map (curry apply eval-seat-id) (parse-result input-parser input))))

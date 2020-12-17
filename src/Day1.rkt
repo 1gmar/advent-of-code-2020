@@ -5,14 +5,11 @@
 
 (struct elem (index value))
 
-(define/match (find-pair-using-map lst value diff-map)
+(define/match (find-pair lst value [diff-map #hash()])
   [('() _ _) '(0 0)]
   [((cons x xs) _ _) (if (hash-has-key? diff-map x)
                          (list x (hash-ref diff-map x))
-                         (find-pair-using-map xs value (hash-set diff-map (- value x) x)))])
-
-(define (find-pair lst value)
-  (find-pair-using-map lst value #hash()))
+                         (find-pair xs value (hash-set diff-map (- value x) x)))])
 
 (define/match (find-triple-using-map lst diff-map)
   [('() _) '(0 0 0)]

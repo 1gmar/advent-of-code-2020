@@ -1,7 +1,7 @@
 #lang racket
 (provide (all-defined-out) (all-from-out parsack))
-(require (only-in parsack $alphaNum $digit $eof $eol $err $letter $spaces between char choice endBy many1 oneOf
-                          oneOfStrings parse-result parser-compose parser-cons parser-one parser-seq return sepBy
+(require (only-in parsack $alphaNum $digit $eof $eol $err $letter $space $spaces between char choice endBy many1 oneOf
+                          oneOfStrings parse-result parser-compose parser-cons parser-one parser-seq return sepBy sepBy1
                           string try >> >>= <any>))
 
 (define (try-or-else parser fallback)

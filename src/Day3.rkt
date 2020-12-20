@@ -4,7 +4,7 @@
                        [solution-part2 (-> string? integer?)]))
 
 (define input-parser
-  (let* ([return-vector (λ (lst) (return (apply vector-immutable lst)))]
+  (let* ([return-vector (compose return (curry apply vector-immutable))]
          [line-parser (>>= (many1 (oneOf ".#")) return-vector)])
         (>>= (trim-spaces-eof (end-or-sep-by line-parser $eol)) return-vector)))
 

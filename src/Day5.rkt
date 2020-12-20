@@ -15,13 +15,12 @@
 (define (eval-seat-id row col)
   (+ (* row 8) col))
 
-(define (find-min-max lst)
-  (foldl (match-lambda** [(x (cons x-min x-max)) (cons (min x-min x) (max x-max x))]) '(1024 . 0) lst))
-
 (define (solution-part1 input)
   (apply max (map (curry apply eval-seat-id) (parse-result input-parser input))))
 
 (define (solution-part2 input)
+  (define (find-min-max lst)
+    (foldl (match-lambda** [(x (cons x-min x-max)) (cons (min x-min x) (max x-max x))]) '(1024 . 0) lst))
   (match-let* ([seat-ids (map (curry apply eval-seat-id) (parse-result input-parser input))]
                [(cons min-id max-id) (find-min-max seat-ids)])
               (set-first (set-subtract (for/set ([x (in-range min-id max-id)]) x) (list->set seat-ids)))))

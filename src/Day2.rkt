@@ -3,7 +3,7 @@
 (provide (contract-out [solution-part1 (-> string? integer?)]
                        [solution-part2 (-> string? integer?)]))
 
-(struct password (range letter value))
+(struct password (range letter chars))
 
 (define input-parser
   (let ([line-parser (parser-compose (pmin <- +integer)
@@ -18,13 +18,13 @@
        (trim-spaces-eof (end-or-sep-by line-parser $eol))))
 
 (define/match (letter-within-range? pass)
-  [((password (cons pmin pmax) letter value))
-   (<= pmin (vector-count (curry equal? letter) value) pmax)])
+  [((password (cons pmin pmax) letter chars))
+   (<= pmin (vector-count (curry equal? letter) chars) pmax)])
 
 (define/match (letter-on-oneof-pos? pass)
-  [((password (cons pos1 pos2) letter value))
-   (let* ([pass-size (vector-length value)]
-          [letter-on-pos? (match-lambda [(? (curry >= pass-size) pos) (equal? (vector-ref value (sub1 pos)) letter)]
+  [((password (cons pos1 pos2) letter chars))
+   (let* ([pass-size (vector-length chars)]
+          [letter-on-pos? (match-lambda [(? (curry >= pass-size) pos) (equal? (vector-ref chars (sub1 pos)) letter)]
                                         [else #f])])
          (xor (letter-on-pos? pos1) (letter-on-pos? pos2)))])
 

@@ -21,8 +21,9 @@
             (find-triple-using-map xs diff-map)))])
 
 (define (find-triple lst value)
+  (define/match (fold-tuple-in-map combination hmap)
+    [((list (elem _ lhs) (elem _ rhs)) _) (hash-set hmap (- value lhs rhs) combination)])
   (let* ([indexed-list (map elem (range (length lst)) lst)]
-         [fold-tuple-in-map (λ (t m) (hash-set m (- value (elem-value (first t)) (elem-value (second t))) t))]
          [diff-map (foldl fold-tuple-in-map #hash() (combinations indexed-list 2))])
         (find-triple-using-map indexed-list diff-map)))
 

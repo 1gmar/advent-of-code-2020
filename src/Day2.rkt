@@ -17,19 +17,16 @@
                                      (return (password (cons pmin pmax) letter (apply vector-immutable letters))))])
        (trim-spaces-eof (end-or-sep-by line-parser $eol))))
 
-(define/match (letter-within-range? pass)
-  [((password (cons pmin pmax) letter chars))
-   (<= pmin (vector-count (curry equal? letter) chars) pmax)])
-
-(define/match (letter-on-oneof-pos? pass)
-  [((password (cons pos1 pos2) letter chars))
-   (let* ([pass-size (vector-length chars)]
-          [letter-on-pos? (match-lambda [(? (curry >= pass-size) pos) (equal? (vector-ref chars (sub1 pos)) letter)]
-                                        [else #f])])
-         (xor (letter-on-pos? pos1) (letter-on-pos? pos2)))])
-
 (define (solution-part1 input)
+  (define/match (letter-within-range? pass)
+    [((password (cons pmin pmax) letter chars)) (<= pmin (vector-count (curry equal? letter) chars) pmax)])
   (count letter-within-range? (parse-result input-parser input)))
 
 (define (solution-part2 input)
+  (define/match (letter-on-oneof-pos? pass)
+    [((password (cons pos1 pos2) letter chars))
+     (let* ([pass-size (vector-length chars)]
+            [letter-on-pos? (match-lambda [(? (curry >= pass-size) pos) (equal? (vector-ref chars (sub1 pos)) letter)]
+                                          [else #f])])
+           (xor (letter-on-pos? pos1) (letter-on-pos? pos2)))])
   (count letter-on-oneof-pos? (parse-result input-parser input)))

@@ -31,10 +31,6 @@
                                (compose return make-immutable-hash))])
         (trim-spaces-eof (end-or-sep-by passport-parser $eol))))
 
-(define (field-value-valid? passport field-key)
-  (and (hash-has-key? passport field-key)
-       (not (empty? (parse-result (hash-ref field-parser-map field-key) (hash-ref passport field-key))))))
-
 (define (passport-valid? criteria passport)
   (andmap (curry criteria passport) mandatory-fields))
 
@@ -42,4 +38,7 @@
   (count (curry passport-valid? hash-has-key?) (parse-result input-parser input)))
 
 (define (solution-part2 input)
+  (define (field-value-valid? passport field-key)
+    (and (hash-has-key? passport field-key)
+         (not (empty? (parse-result (hash-ref field-parser-map field-key) (hash-ref passport field-key))))))
   (count (curry passport-valid? field-value-valid?) (parse-result input-parser input)))

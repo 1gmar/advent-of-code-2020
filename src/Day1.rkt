@@ -8,7 +8,7 @@
 
 (define (solution-part1 input)
   (define/match (find-pair lst value [diff-map #hash()])
-    [('() _ _) '(0 0)]
+    [('() _ _) '()]
     [((cons x xs) _ _) (if (hash-has-key? diff-map x)
                            (list x (hash-ref diff-map x))
                            (find-pair xs value (hash-set diff-map (- value x) x)))])
@@ -16,7 +16,7 @@
 
 (define (solution-part2 input)
   (define/match (find-triple lst diff-map)
-    [('() _) '(0 0 0)]
+    [('() _) '()]
     [((cons (cons x-index x-value) xs) _)
      (let ([index-not-equal? (compose not (curry equal? x-index) car)])
           (if (and (hash-has-key? diff-map x-value)

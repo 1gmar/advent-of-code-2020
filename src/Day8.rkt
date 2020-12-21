@@ -33,6 +33,5 @@
                                       [(cons acc terminated?) (run-program (vector-set program pos instr))])
                                      (if terminated? acc (find-termination-acc program poss)))])
   (let* ([program (parse-result input-parser input)]
-         [indexed-program (map cons (range (vector-length program)) (vector->list program))]
-         [nops-jmps-poss (map car (filter-not (compose (curry equal? 'acc) cadr) indexed-program))])
+         [nops-jmps-poss (indexes-where (vector->list program) (compose not (curry equal? 'acc) car))])
         (find-termination-acc program nops-jmps-poss)))

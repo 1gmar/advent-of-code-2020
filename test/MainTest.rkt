@@ -3,7 +3,7 @@
   (only-in rackunit test-suite)
   (only-in rackunit/text-ui run-tests)
   "Day1Test.rkt" "Day2Test.rkt" "Day3Test.rkt" "Day4Test.rkt" "Day5Test.rkt" "Day6Test.rkt" "Day7Test.rkt"
-  "Day8Test.rkt" "Day9Test.rkt" "Day10Test.rkt")
+  "Day8Test.rkt" "Day9Test.rkt" "Day10Test.rkt" "Day11Test.rkt")
 
 (run-tests
   (test-suite "Advent of Code Test Suite"
@@ -16,4 +16,5 @@
     day-7-suite
     day-8-suite
     day-9-suite
-    day-10-suite) 'verbose)
+    day-10-suite
+    day-11-suite) 'verbose)

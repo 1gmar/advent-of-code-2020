@@ -23,12 +23,14 @@
 (define (solution-part2 input)
   (define/match (eval-diffs acc rating)
     [((cons diffs prev) _) (cons (append diffs (list (- rating prev))) rating)])
+
   (define (split-on separator diff-list [diff-sections '()])
     (match/values (splitf-at diff-list (compose not (curry equal? separator)))
                   [('() '()) diff-sections]
                   [(head '()) (cons head diff-sections)]
                   [('() (cons _ tail)) (split-on separator tail diff-sections)]
                   [(head (cons _ tail)) (split-on separator tail (cons head diff-sections))]))
+
   (define (compute-section-variations diff-section)
     (define/match (interleave val lst)
       [(_ '()) (list (list val))]
@@ -46,6 +48,7 @@
     (let* ([n (sub1 (length diff-section))]
            [invalid-variations (if (< n 3) 0 (set-count (apply set (flatten (gen-invalid-variations n)))))])
           (- (expt 2 n) invalid-variations)))
+
   (let* ([sorted-ratings (bucket-sort (parse-result input-parser input))]
          [diff-list (car (stream-fold eval-diffs '(() . 0) sorted-ratings))]
          [diff-sections (split-on 3 diff-list)])

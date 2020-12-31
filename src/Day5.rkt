@@ -23,4 +23,4 @@
     (foldl (match-lambda** [(x (cons x-min x-max)) (cons (min x-min x) (max x-max x))]) '(1024 . 0) lst))
   (match-let* ([seat-ids (map (curry apply eval-seat-id) (parse-result input-parser input))]
                [(cons min-id max-id) (find-min-max seat-ids)])
-              (set-first (set-subtract (for/set ([x (in-range min-id max-id)]) x) (list->set seat-ids)))))
+              (set-first (set-subtract (list->set (range min-id max-id)) (list->set seat-ids)))))

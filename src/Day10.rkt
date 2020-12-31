@@ -8,22 +8,20 @@
 
 (define (bucket-sort ratings)
   (for/fold ([buckets (make-vector (add1 (apply max ratings)))]
-             #:result (for/stream ([x (in-vector buckets)] #:when (> x 0)) x))
+             #:result (for/list ([x (in-vector buckets)] #:when (positive? x)) x))
             ([rating (in-list ratings)])
             (begin (vector-set! buckets rating rating) buckets)))
 
+(define/match (eval-diffs rating acc)
+  [(_ (cons diffs prev)) (cons (append diffs (list (- rating prev))) rating)])
+
 (define (solution-part1 input)
-  (define/match (count-diffs acc rating)
-    [((list prev 1-diffs 3-diffs) _) (cond [(= 1 (- rating prev)) (list rating (add1 1-diffs) 3-diffs)]
-                                           [(= 3 (- rating prev)) (list rating 1-diffs (add1 3-diffs))]
-                                           [else (list rating 1-diffs 3-diffs)])])
-  (let ([sorted-ratings (bucket-sort (parse-result input-parser input))])
-       (apply * (rest (stream-fold count-diffs '(0 0 1) sorted-ratings)))))
+  (let* ([sorted-ratings (bucket-sort (parse-result input-parser input))]
+         [diff-list (car (foldl eval-diffs '(() . 0) sorted-ratings))])
+        (apply * (foldl (match-lambda** [(1 (list 1s 3s)) (list (add1 1s) 3s)]
+                                        [(3 (list 1s 3s)) (list 1s (add1 3s))]) '(0 1) diff-list))))
 
 (define (solution-part2 input)
-  (define/match (eval-diffs acc rating)
-    [((cons diffs prev) _) (cons (append diffs (list (- rating prev))) rating)])
-
   (define (split-on separator diff-list [diff-sections '()])
     (match/values (splitf-at diff-list (compose not (curry equal? separator)))
                   [('() '()) diff-sections]
@@ -50,6 +48,6 @@
           (- (expt 2 n) invalid-variations)))
 
   (let* ([sorted-ratings (bucket-sort (parse-result input-parser input))]
-         [diff-list (car (stream-fold eval-diffs '(() . 0) sorted-ratings))]
+         [diff-list (car (foldl eval-diffs '(() . 0) sorted-ratings))]
          [diff-sections (split-on 3 diff-list)])
         (apply * (map compute-section-variations diff-sections))))

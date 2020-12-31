@@ -11,11 +11,19 @@
          [row-parser (>>= (many1 (oneOf ".L")) (compose return new-vector))])
         (>>= (trim-spaces-eof (end-or-sep-by row-parser $eol)) (compose return wrap-matrix new-vector))))
 
+(define occupied? (curry equal? #\#))
+
 (define/match (-/ grid row col)
   [((seat-grid matrix _ _) _ _) (vector-ref (vector-ref matrix row) col)])
 
+(define (for/neighbors body-closure [when-closure (const #t)])
+  (for*/list ([i (in-list '(-1 0 1))]
+              [j (in-list '(-1 0 1))]
+              #:unless (= 0 i j)
+              #:when (when-closure i j))
+             (body-closure i j)))
+
 (define (run-simulation get-neighbors occupied-threshold grid)
-  (define occupied? (curry equal? #\#))
   (define height (seat-grid-height grid))
   (define width (seat-grid-width grid))
 
@@ -39,17 +47,15 @@
   (run-simulation-iter grid))
 
 (define (count-occupied-seats matrix)
-  (for/sum ([row (in-vector matrix)]) (vector-count (curry equal? #\#) row)))
+  (for/sum ([row (in-vector matrix)]) (vector-count occupied? row)))
 
 (define (solution-part1 input)
   (define (adjacent-cells grid row col)
     (define height (seat-grid-height grid))
     (define width (seat-grid-width grid))
-    (for*/list ([i (in-list '(-1 0 1))]
-                [j (in-list '(-1 0 1))]
-                #:unless (= 0 i j)
-                #:when (and (<= 0 (+ row i) (sub1 height)) (<= 0 (+ col j) (sub1 width))))
-               (-/ grid (+ row i) (+ col j))))
+    (for/neighbors (λ (i j) (-/ grid (+ row i) (+ col j)))
+                   (λ (i j) (and (<= 0 (+ row i) (sub1 height))
+                                 (<= 0 (+ col j) (sub1 width))))))
 
   (count-occupied-seats (run-simulation adjacent-cells 4 (parse-result input-parser input))))
 
@@ -69,9 +75,6 @@
                                             #:unless (equal? (-/ grid i j) #\.))
                                            (-/ grid i j))])
 
-    (filter char? (map look-around (for*/list ([i (in-list '(-1 0 1))]
-                                               [j (in-list '(-1 0 1))]
-                                               #:unless (= 0 i j))
-                                              (cons i j)))))
+    (filter char? (map look-around (for/neighbors cons))))
 
   (count-occupied-seats (run-simulation in-sight-cells 5 (parse-result input-parser input))))

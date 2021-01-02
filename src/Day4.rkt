@@ -1,5 +1,5 @@
 #lang racket
-(require "util/ParseUtils.rkt")
+(require (only-in threading λ~>> ~>>) "util/ParseUtils.rkt")
 (provide (contract-out [solution-part1 (-> string? integer?)]
                        [solution-part2 (-> string? integer?)]))
 
@@ -23,12 +23,11 @@
 (define mandatory-fields (hash-keys field-parser-map))
 
 (define input-parser
-  (let* ([return-string (compose return list->string)]
+  (let* ([return-string (λ~>> list->string return)]
          [passport-field-keys (>>= (apply oneOfStrings (cons "cid" mandatory-fields)) return-string)]
          [passport-field-values (>>= (many1 (<any> $alphaNum (char #\#))) return-string)]
          [passport-field (parser-seq passport-field-keys (~ (char #\:)) passport-field-values #:combine-with cons)]
-         [passport-parser (>>= (end-or-sep-by passport-field (<any> $eol $spaces))
-                               (compose return make-immutable-hash))])
+         [passport-parser (>>= (end-or-sep-by passport-field (<any> $eol $spaces)) (λ~>> make-immutable-hash return))])
         (trim-spaces-eof (end-or-sep-by passport-parser $eol))))
 
 (define (passport-valid? criteria passport)
@@ -38,7 +37,12 @@
   (count (curry passport-valid? hash-has-key?) (parse-result input-parser input)))
 
 (define (solution-part2 input)
+
   (define (field-value-valid? passport field-key)
     (and (hash-has-key? passport field-key)
-         (not (empty? (parse-result (hash-ref field-parser-map field-key) (hash-ref passport field-key))))))
+         (~>> (hash-ref passport field-key)
+              (parse-result (hash-ref field-parser-map field-key))
+              empty?
+              not)))
+
   (count (curry passport-valid? field-value-valid?) (parse-result input-parser input)))

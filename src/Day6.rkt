@@ -1,5 +1,5 @@
 #lang racket
-(require "util/ParseUtils.rkt")
+(require (only-in threading λ~>> ~>>) "util/ParseUtils.rkt")
 (provide (contract-out [solution-part1 (-> string? integer?)]
                        [solution-part2 (-> string? integer?)]))
 
@@ -9,8 +9,11 @@
         (trim-spaces-eof (end-or-sep-by group-parser $eol))))
 
 (define (solution-part1 input)
-  (apply + (map (compose set-count list->set flatten) (parse-result input-parser input))))
+  (~>> (parse-result input-parser input)
+       (map (λ~>> flatten list->set set-count))
+       (apply +)))
 
 (define (solution-part2 input)
-  (let ([count-yes-answers (compose set-count (curry apply set-intersect) (curry map list->set))])
-       (apply + (map count-yes-answers (parse-result input-parser input)))))
+  (~>> (parse-result input-parser input)
+       (map (λ~>> (map list->set) (apply set-intersect) set-count))
+       (apply +)))

@@ -1,5 +1,5 @@
 #lang racket
-(require "util/ParseUtils.rkt")
+(require (only-in threading λ~>> ~>>) "util/ParseUtils.rkt")
 (provide (contract-out [solution-part1 (-> string? integer?)]
                        [solution-part2 (-> string? integer?)]))
 
@@ -8,10 +8,10 @@
 (define input-parser
   (let* ([new-vector (curry apply vector)]
          [wrap-matrix (λ (matrix) (seat-grid matrix (vector-length matrix) (vector-length (vector-ref matrix 0))))]
-         [row-parser (>>= (many1 (oneOf ".L")) (compose return new-vector))])
-        (>>= (trim-spaces-eof (end-or-sep-by row-parser $eol)) (compose return wrap-matrix new-vector))))
+         [row-parser (>>= (many1 (oneOf ".L")) (λ~>> new-vector return))])
+        (>>= (trim-spaces-eof (end-or-sep-by row-parser $eol)) (λ~>> new-vector wrap-matrix return))))
 
-(define occupied? (curry equal? #\#))
+(define occupied? (curry eq? #\#))
 
 (define/match (-/ grid row col)
   [((seat-grid matrix _ _) _ _) (vector-ref (vector-ref matrix row) col)])
@@ -28,10 +28,12 @@
   (define width (seat-grid-width grid))
 
   (define (run-simulation-iter current-grid)
+
     (define (next-cell-state row col)
       (define neighbors (get-neighbors current-grid row col))
       (define cell (-/ current-grid row col))
-      (match cell [#\L #:when (andmap (compose not occupied?) neighbors) #\#]
+
+      (match cell [#\L #:when (andmap (λ~>> occupied? not) neighbors) #\#]
                   [#\# #:when (<= occupied-threshold (count occupied? neighbors)) #\L]
                   [else cell]))
 
@@ -50,16 +52,21 @@
   (for/sum ([row (in-vector matrix)]) (vector-count occupied? row)))
 
 (define (solution-part1 input)
+
   (define (adjacent-cells grid row col)
     (define height (seat-grid-height grid))
     (define width (seat-grid-width grid))
+
     (for/neighbors (λ (i j) (-/ grid (+ row i) (+ col j)))
                    (λ (i j) (and (<= 0 (+ row i) (sub1 height))
                                  (<= 0 (+ col j) (sub1 width))))))
 
-  (count-occupied-seats (run-simulation adjacent-cells 4 (parse-result input-parser input))))
+  (~>> (parse-result input-parser input)
+       (run-simulation adjacent-cells 4)
+       count-occupied-seats))
 
 (define (solution-part2 input)
+
   (define (in-sight-cells grid row col)
     (define height (seat-grid-height grid))
     (define width (seat-grid-width grid))
@@ -72,9 +79,13 @@
     (define/match (look-around direction)
       [((cons row-dir col-dir)) (for/first ([i (dir-range row-dir row height)]
                                             [j (dir-range col-dir col width)]
-                                            #:unless (equal? (-/ grid i j) #\.))
+                                            #:unless (eq? (-/ grid i j) #\.))
                                            (-/ grid i j))])
 
-    (filter char? (map look-around (for/neighbors cons))))
+    (~>> (for/neighbors cons)
+         (map look-around)
+         (filter char?)))
 
-  (count-occupied-seats (run-simulation in-sight-cells 5 (parse-result input-parser input))))
+  (~>> (parse-result input-parser input)
+       (run-simulation in-sight-cells 5)
+       count-occupied-seats))

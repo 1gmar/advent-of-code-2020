@@ -1,6 +1,7 @@
 #lang racket
 (provide (all-defined-out) (all-from-out parsack))
-(require (only-in parsack $alphaNum $digit $eof $eol $err $letter $space $spaces between char choice endBy many many1
+(require (only-in threading λ~>>)
+         (only-in parsack $alphaNum $digit $eof $eol $err $letter $space $spaces between char choice endBy many many1
                           oneOf oneOfStrings optional parse-result parser-compose parser-cons parser-one parser-seq
                           return sepBy sepBy1 string try >> >>= <any>))
 
@@ -11,15 +12,15 @@
   (<any> (try lhs) rhs))
 
 (define chars->number
-  (compose string->number list->string))
+  (λ~>> list->string string->number))
 
 (define +integer
   (>>= (>> (optional (char #\+)) (many1 $digit))
-       (λ (digits) (return (chars->number digits)))))
+       (λ~>> chars->number return)))
 
 (define -integer
   (>>= (parser-cons (char #\-) (many1 $digit))
-       (λ (digits) (return (chars->number digits)))))
+       (λ~>> chars->number return)))
 
 (define integer
   (<any> +integer -integer))

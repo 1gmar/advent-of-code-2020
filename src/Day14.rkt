@@ -7,8 +7,9 @@
 
 (define input-parser
   (let* ([bitmask-parser (parser-one (string "mask = ") (~> (parser-count 36 (oneOf "01X"))) $eol)]
-         [assignment-parser (parser-seq (~ (string "mem[")) +integer (~ (string "] = ")) +integer (~ (many $eol))
-                                        #:combine-with cons)]
+         [assignment-parser (parser-seq (~ (string "mem[")) +integer
+                                        (~ (string "] = ")) +integer
+                                        (~ (many $eol)) #:combine-with cons)]
          [assignments-parser (many1Until assignment-parser (any-try (lookAhead (string "mask")) $eof))]
          [block-parser (parser-compose (bitmask <- bitmask-parser)
                                        (assignments <- assignments-parser)
@@ -24,12 +25,12 @@
 (define (36-bit-list->integer bit-list)
   (~>> (append '(#\# #\b) bit-list) chars->number))
 
-(define (run-program input address-λ value-λ)
+(define (run-program input in-addresses in-values)
   (for*/hash ([block (in-list (parse-result input-parser input))]
               [bitmask (in-value (block-bitmask block))]
               [assignment (in-list (block-assignments block))]
-              [address (address-λ bitmask assignment)]
-              [value (value-λ bitmask assignment)])
+              [address (in-addresses bitmask assignment)]
+              [value (in-values bitmask assignment)])
              (values address value)))
 
 (define (sum-values memory)

@@ -16,6 +16,6 @@
 		"2gua.rainbow-brackets"
 	],
     "remoteUser": "vscode",
-    "postCreateCommand": "raco pkg install --deps search-auto racket-langserver",
+    "postCreateCommand": "raco pkg install --deps search-auto racket-langserver graph threading",
     "postStartCommand": "Xvfb :0 &"
 }
